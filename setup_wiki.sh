@@ -196,7 +196,7 @@ ${SUDO_PREFIX}${RUNTIME} -f compose-initial.yaml exec -T mediawiki \
     "$WIKI_NAME" \
     "$ADMIN_USER"
 
-# Copy generated settings using SERVICE NAME (not container name)
+# Copy generated settings using SERVICE NAME
 echo "Extracting LocalSettings.php..."
 ${SUDO_PREFIX}${RUNTIME} -f compose-initial.yaml cp mediawiki:/var/www/html/LocalSettings.php ./
 
@@ -213,36 +213,37 @@ chmod 664 LocalSettings.php
 echo "Stopping initial containers..."
 ${SUDO_PREFIX}${RUNTIME} -f compose-initial.yaml down
 
-# Start main stack
-echo "Starting main stack..."
-${SUDO_PREFIX}${RUNTIME} -f compose.yaml up -d
-
-# Configure skin settings
+# Modify skin settings in-place
 echo "Configuring Loftia skin..."
+sed -i -e '/wfLoadSkin/d' \
+       -e '/\$wgDefaultSkin/d' \
+       -e '/\$wgSkipSkins/d' \
+       LocalSettings.php
+
+# Add skin configuration at the end
 cat >> LocalSettings.php <<'EOS'
 
-// ==================================================
-// Loftia Skin Configuration
-// ==================================================
+// ========================================================
+// Custom Skin Configuration
+// ========================================================
 
-// Disable all other skins
-$wgSkipSkins = [
-    'CologneBlue',
-    'MinervaNeue',
-    'MonoBook',
-    'Timeless',
-    'Vector'
-];
+// Only enable Loftia skin
+$wgSkipSkins = array_keys( $wgValidSkinNames );
+$wgSkipSkins = array_diff( $wgSkipSkins, ['loftia'] );
 
-// Enable Loftia skin
-wfLoadSkin('Loftia');
+// Load and set Loftia as default
+wfLoadSkin( 'Loftia' );
 $wgDefaultSkin = 'loftia';
 
 EOS
 
-# Restart to apply changes
-echo "Restarting MediaWiki..."
-${SUDO_PREFIX}${RUNTIME} -f compose.yaml restart mediawiki
+# Start main stack
+echo "Starting main stack..."
+${SUDO_PREFIX}${RUNTIME} -f compose.yaml up -d
+
+# Apply skin configuration
+echo "Applying skin configuration..."
+${SUDO_PREFIX}${RUNTIME} -f compose.yaml exec mediawiki php maintenance/update.php --quick
 
 echo "=================================================="
 echo "Installation complete!"
