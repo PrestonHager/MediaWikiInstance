@@ -1,4 +1,7 @@
 # Docker compose file for MediaWiki
+# You probably don't want to run this file directly.
+# Run `bash setup_wiki.sh` instead to set up the MediaWiki instance and see the
+# README.md for more information.
 
 services:
   mediawiki:
