@@ -1,0 +1,35 @@
+# Docker compose file for MediaWiki
+
+services:
+  mediawiki:
+    image: mediawiki:latest
+    container_name: mediawiki
+    ports:
+      - "8080:80"
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - MEDIAWIKI_DB_TYPE=mysql
+      - MEDIAWIKI_DB_HOST=db
+      - MEDIAWIKI_DB_NAME=mediawiki
+      - MEDIAWIKI_DB_USER=mediawikiuser
+      - MEDIAWIKI_DB_PASSWORD=mediawikipassword
+    volumes:
+      - ./Loftia:/var/www/html/skins/Loftia
+      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+      #- ./mediawiki_data:/var/www/html
+  db:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mediawiki
+      - MYSQL_USER=mediawikiuser
+      - MYSQL_PASSWORD=mediawikipassword
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
