@@ -11,7 +11,7 @@ instance with a MySQL database, along with the [Loftia] skin.
 
  1. Clone this repository to your local machine:
     ```bash
-    git clone
+    git clone https://github.com/PrestonHager/MediaWikiInstance.git
      ```
  2. Navigate to the cloned directory:
     ```bash
@@ -20,14 +20,23 @@ instance with a MySQL database, along with the [Loftia] skin.
  3. Start the MediaWiki and MySQL containers using Docker Compose. The `-d` flag
     starts the containers in a daemonized mode.
     ```bash
-     docker-compose up -d
+     docker compose up -d
+     ```
+     Note that to run docker you may need to use `sudo` or add your user to the
+     docker group.
+ 4. Run the installation script to set up MediaWiki. You can do this by
+    executing the following command:
+    ```bash
+     docker compose exec mediawiki php maintenance/run.php install \
+         --pass "adminpassword" \
+         "Test Wiki" \
+         Admin
      ```
  4. Open your web browser and navigate to `http://localhost:8080` to access the
-    MediaWiki setup page.
- 5. Follow the on-screen instructions to complete the MediaWiki installation.
- 6. After completing the installation, you can log in to your MediaWiki instance
-    and start creating and managing your wiki content.
- 7. To stop the containers, run:
+    MediaWiki installation page. If you are using a remote server, replace
+    `localhost` with the server's IP address or domain name and ensure that the
+    proper ports are open.
+ 5. To stop the containers, run:
  
     ```bash
      docker-compose down

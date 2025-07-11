@@ -9,7 +9,8 @@ services:
     links:
       - db
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - MEDIAWIKI_DB_TYPE=mysql
       - MEDIAWIKI_DB_HOST=db
@@ -19,7 +20,7 @@ services:
     volumes:
       - ./Loftia:/var/www/html/skins/Loftia
       - ./LocalSettings.php:/var/www/html/LocalSettings.php
-      #- ./mediawiki_data:/var/www/html
+      - db_data:/var/lib/mysql
   db:
     image: mariadb:latest
     environment:
@@ -29,6 +30,11 @@ services:
       - MYSQL_PASSWORD=mediawikipassword
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
 volumes:
   db_data:
