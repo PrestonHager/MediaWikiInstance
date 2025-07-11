@@ -227,10 +227,6 @@ cat >> LocalSettings.php <<'EOS'
 // Custom Skin Configuration
 // ========================================================
 
-// Only enable Loftia skin
-$wgSkipSkins = array_keys( $wgValidSkinNames );
-$wgSkipSkins = array_diff( $wgSkipSkins, ['loftia'] );
-
 // Load and set Loftia as default
 wfLoadSkin( 'Loftia' );
 $wgDefaultSkin = 'loftia';

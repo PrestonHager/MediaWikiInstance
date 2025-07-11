@@ -27,7 +27,7 @@ instance with a MySQL database, along with the [Loftia] skin.
  4. Run the installation script to set up MediaWiki. You can do this by
     executing the following command:
     ```bash
-    ./setup_wiki.sh
+    ./setup_wiki.sh --wiki-name=Wiki --admin-user=Admin --admin-password=password
     ```
  4. Open your web browser and navigate to `http://localhost:8080` to access the
     MediaWiki installation page. If you are using a remote server, replace
